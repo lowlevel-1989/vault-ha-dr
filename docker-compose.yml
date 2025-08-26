@@ -11,120 +11,120 @@ x-vault-common: &vault-common
     - vault-cluster
 
 networks:
-  cluster1_net:
-  cluster2_net:
-  cluster3_net:
-  cluster4_net:
+  clusterA_net:
+  clusterB_net:
+  clusterC_net:
+  clusterD_net:
 
 services:
-  # --- Cluster 1 ---
-  vault1-1:
+  # --- Cluster A ---
+  vaultA-1:
     <<: *vault-common
-    container_name: vault1-1
+    container_name: vaultA-1
     volumes:
-      - ./cluster1/config/node1.hcl:/vault/config/vault.hcl:z
-      - ./cluster1/data/node1:/vault/data:z
-    networks: [cluster1_net]
+      - ./clusterA/config/node1.hcl:/vault/config/vault.hcl:z
+      - ./clusterA/data/node1:/vault/data:z
+    networks: [clusterA_net]
     ports: ["8211:8200"]
 
-  vault1-2:
+  vaultA-2:
     <<: *vault-common
-    container_name: vault1-2
+    container_name: vaultA-2
     volumes:
-      - ./cluster1/config/node2.hcl:/vault/config/vault.hcl:z
-      - ./cluster1/data/node2:/vault/data:z
-    networks: [cluster1_net]
+      - ./clusterA/config/node2.hcl:/vault/config/vault.hcl:z
+      - ./clusterA/data/node2:/vault/data:z
+    networks: [clusterA_net]
     ports: ["8212:8200"]
 
-  vault1-3:
+  vaultA-3:
     <<: *vault-common
-    container_name: vault1-3
+    container_name: vaultA-3
     volumes:
-      - ./cluster1/config/node3.hcl:/vault/config/vault.hcl:z
-      - ./cluster1/data/node3:/vault/data:z
-    networks: [cluster1_net]
+      - ./clusterA/config/node3.hcl:/vault/config/vault.hcl:z
+      - ./clusterA/data/node3:/vault/data:z
+    networks: [clusterA_net]
     ports: ["8213:8200"]
 
-  # --- Cluster 2 ---
-  vault2-1:
+  # --- Cluster B ---
+  vaultB-1:
     <<: *vault-common
-    container_name: vault2-1
+    container_name: vaultB-1
     volumes:
-      - ./cluster2/config/node1.hcl:/vault/config/vault.hcl:z
-      - ./cluster2/data/node1:/vault/data:z
-    networks: [cluster2_net]
+      - ./clusterB/config/node1.hcl:/vault/config/vault.hcl:z
+      - ./clusterB/data/node1:/vault/data:z
+    networks: [clusterB_net]
     ports: ["8221:8200"]
 
-  vault2-2:
+  vaultB-2:
     <<: *vault-common
-    container_name: vault2-2
+    container_name: vaultB-2
     volumes:
-      - ./cluster2/config/node2.hcl:/vault/config/vault.hcl:z
-      - ./cluster2/data/node2:/vault/data:z
-    networks: [cluster2_net]
+      - ./clusterB/config/node2.hcl:/vault/config/vault.hcl:z
+      - ./clusterB/data/node2:/vault/data:z
+    networks: [clusterB_net]
     ports: ["8222:8200"]
 
-  vault2-3:
+  vaultB-3:
     <<: *vault-common
-    container_name: vault2-3
+    container_name: vaultB-3
     volumes:
-      - ./cluster2/config/node3.hcl:/vault/config/vault.hcl:z
-      - ./cluster2/data/node3:/vault/data:z
-    networks: [cluster2_net]
+      - ./clusterB/config/node3.hcl:/vault/config/vault.hcl:z
+      - ./clusterB/data/node3:/vault/data:z
+    networks: [clusterB_net]
     ports: ["8223:8200"]
 
-  # --- Cluster 3 ---
-  vault3-1:
+  # --- Cluster C ---
+  vaultC-1:
     <<: *vault-common
-    container_name: vault3-1
+    container_name: vaultC-1
     volumes:
-      - ./cluster3/config/node1.hcl:/vault/config/vault.hcl:z
-      - ./cluster3/data/node1:/vault/data:z
-    networks: [cluster3_net]
+      - ./clusterC/config/node1.hcl:/vault/config/vault.hcl:z
+      - ./clusterC/data/node1:/vault/data:z
+    networks: [clusterC_net]
     ports: ["8231:8200"]
 
-  vault3-2:
+  vaultC-2:
     <<: *vault-common
-    container_name: vault3-2
+    container_name: vaultC-2
     volumes:
-      - ./cluster3/config/node2.hcl:/vault/config/vault.hcl:z
-      - ./cluster3/data/node2:/vault/data:z
-    networks: [cluster3_net]
+      - ./clusterC/config/node2.hcl:/vault/config/vault.hcl:z
+      - ./clusterC/data/node2:/vault/data:z
+    networks: [clusterC_net]
     ports: ["8232:8200"]
 
-  vault3-3:
+  vaultC-3:
     <<: *vault-common
-    container_name: vault3-3
+    container_name: vaultC-3
     volumes:
-      - ./cluster3/config/node3.hcl:/vault/config/vault.hcl:z
-      - ./cluster3/data/node3:/vault/data:z
-    networks: [cluster3_net]
+      - ./clusterC/config/node3.hcl:/vault/config/vault.hcl:z
+      - ./clusterC/data/node3:/vault/data:z
+    networks: [clusterC_net]
     ports: ["8233:8200"]
 
-  # --- Cluster 4 ---
-  vault4-1:
+  # --- Cluster D ---
+  vaultD-1:
     <<: *vault-common
-    container_name: vault4-1
+    container_name: vaultD-1
     volumes:
-      - ./cluster4/config/node1.hcl:/vault/config/vault.hcl:z
-      - ./cluster4/data/node1:/vault/data:z
-    networks: [cluster4_net]
+      - ./clusterD/config/node1.hcl:/vault/config/vault.hcl:z
+      - ./clusterD/data/node1:/vault/data:z
+    networks: [clusterD_net]
     ports: ["8241:8200"]
 
-  vault4-2:
+  vaultD-2:
     <<: *vault-common
-    container_name: vault4-2
+    container_name: vaultD-2
     volumes:
-      - ./cluster4/config/node2.hcl:/vault/config/vault.hcl:z
-      - ./cluster4/data/node2:/vault/data:z
-    networks: [cluster4_net]
+      - ./clusterD/config/node2.hcl:/vault/config/vault.hcl:z
+      - ./clusterD/data/node2:/vault/data:z
+    networks: [clusterD_net]
     ports: ["8242:8200"]
 
-  vault4-3:
+  vaultD-3:
     <<: *vault-common
-    container_name: vault4-3
+    container_name: vaultD-3
     volumes:
-      - ./cluster4/config/node3.hcl:/vault/config/vault.hcl:z
-      - ./cluster4/data/node3:/vault/data:z
-    networks: [cluster4_net]
+      - ./clusterD/config/node3.hcl:/vault/config/vault.hcl:z
+      - ./clusterD/data/node3:/vault/data:z
+    networks: [clusterD_net]
     ports: ["8243:8200"]

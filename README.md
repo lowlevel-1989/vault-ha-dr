@@ -13,7 +13,7 @@ cluster_address listen post unseal.     (820x)
 
 show ports listen in container
 ```
-podman exec -it vault1-2 sh
+podman exec -it vaultA-2 sh
 netstat -tuln
 ```
 
@@ -31,25 +31,25 @@ podman-compose up -d
 
 This will launch 12 containers:
 
-* Cluster 1 → vault1-1, vault1-2, vault1-3
-* Cluster 2 → vault2-1, vault2-2, vault2-3
-* Cluster 3 → vault3-1, vault3-2, vault3-3
-* Cluster 4 → vault4-1, vault4-2, vault4-3
+* Cluster A → vaultA-1, vaultA-2, vaultA-3
+* Cluster B → vaultB-1, vaultB-2, vaultB-3
+* Cluster C → vaultC-1, vaultC-2, vaultC-3
+* Cluster D → vaultD-1, vaultD-2, vaultD-3
 
 ### 2. Initialize each cluster
 
 In each cluster, only initialize the first node:
 
 ```
-podman exec -it vault1-1 vault operator init
-podman exec -it vault2-1 vault operator init
-podman exec -it vault3-1 vault operator init
-podman exec -it vault4-1 vault operator init
+podman exec -it vaultA-1 vault operator init
+podman exec -it vaultB-1 vault operator init
+podman exec -it vaultC-1 vault operator init
+podman exec -it vaultD-1 vault operator init
 
-podman exec -it vault1-1 vault operator unseal
-podman exec -it vault2-1 vault operator unseal
-podman exec -it vault3-1 vault operator unseal
-podman exec -it vault4-1 vault operator unseal
+podman exec -it vaultA-1 vault operator unseal
+podman exec -it vaultB-1 vault operator unseal
+podman exec -it vaultC-1 vault operator unseal
+podman exec -it vaultD-1 vault operator unseal
 ```
 
 Save the unseal keys and the root token printed by each `init`, they are unique per cluster.
@@ -58,44 +58,44 @@ Save the unseal keys and the root token printed by each `init`, they are unique 
 
 After initializing the first node, join the other two:
 
-Cluster 1:
+Cluster A:
 
 ```
-podman exec -it vault1-2 vault operator raft join http://vault1-1:8200
-podman exec -it vault1-3 vault operator raft join http://vault1-1:8200
+podman exec -it vaultA-2 vault operator raft join http://vaultA-1:8200
+podman exec -it vaultA-3 vault operator raft join http://vaultA-1:8200
 
-podman exec -it vault1-2 vault operator unseal
-podman exec -it vault1-3 vault operator unseal
+podman exec -it vaultA-2 vault operator unseal
+podman exec -it vaultA-3 vault operator unseal
 ```
 
-Cluster 2:
+Cluster A:
 
 ```
-podman exec -it vault2-2 vault operator raft join http://vault2-1:8200
-podman exec -it vault2-3 vault operator raft join http://vault2-1:8200
+podman exec -it vaultB-2 vault operator raft join http://vaultB-1:8200
+podman exec -it vaultB-3 vault operator raft join http://vaultB-1:8200
 
-podman exec -it vault2-2 vault operator unseal
-podman exec -it vault2-3 vault operator unseal
+podman exec -it vaultB-2 vault operator unseal
+podman exec -it vaultB-3 vault operator unseal
 ```
 
-Cluster 3:
+Cluster C:
 
 ```
-podman exec -it vault3-2 vault operator raft join http://vault3-1:8200
-podman exec -it vault3-3 vault operator raft join http://vault3-1:8200
+podman exec -it vaultC-2 vault operator raft join http://vaultC-1:8200
+podman exec -it vaultC-3 vault operator raft join http://vaultC-1:8200
 
-podman exec -it vault3-2 vault operator unseal
-podman exec -it vault3-3 vault operator unseal
+podman exec -it vaultC-2 vault operator unseal
+podman exec -it vaultC-3 vault operator unseal
 ```
 
-Cluster 4:
+Cluster D:
 
 ```
-podman exec -it vault4-2 vault operator raft join http://vault4-1:8200
-podman exec -it vault4-3 vault operator raft join http://vault4-1:8200
+podman exec -it vaultD-2 vault operator raft join http://vaultD-1:8200
+podman exec -it vaultD-3 vault operator raft join http://vaultD-1:8200
 
-podman exec -it vault4-2 vault operator unseal
-podman exec -it vault4-3 vault operator unseal
+podman exec -it vaultD-2 vault operator unseal
+podman exec -it vaultD-3 vault operator unseal
 ```
 
 ### 4. Verify cluster state
@@ -103,7 +103,7 @@ podman exec -it vault4-3 vault operator unseal
 On any node of a cluster:
 
 ```
-podman exec -it vault1-1 vault operator raft list-peers
+podman exec -it vaultA-1 vault operator raft list-peers
 ```
 
 You should see all 3 nodes (leader + 2 followers).
@@ -127,6 +127,7 @@ To stop and clean up the containers:
 
 ```
 podman-compose down -v
+rm -rf cluster{A..D}/data/node{1..3}
 ```
 
 This will remove the containers and data volumes.
@@ -134,5 +135,6 @@ This will remove the containers and data volumes.
 
 ## References
 
+- https://developer.hashicorp.com/vault/tutorials/raft/raft-storage
 
 
