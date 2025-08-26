@@ -36,73 +36,13 @@ This will launch 12 containers:
 * Cluster C → vaultC-1, vaultC-2, vaultC-3
 * Cluster D → vaultD-1, vaultD-2, vaultD-3
 
-### 2. Initialize each cluster
-
-In each cluster, only initialize the first node:
-
-```
-podman exec -it vaultA-1 vault operator init
-podman exec -it vaultB-1 vault operator init
-podman exec -it vaultC-1 vault operator init
-podman exec -it vaultD-1 vault operator init
-
-podman exec -it vaultA-1 vault operator unseal
-podman exec -it vaultB-1 vault operator unseal
-podman exec -it vaultC-1 vault operator unseal
-podman exec -it vaultD-1 vault operator unseal
-```
-
-Save the unseal keys and the root token printed by each `init`, they are unique per cluster.
-
-### 3. Join the other nodes to the cluster
-
-After initializing the first node, join the other two:
-
-Cluster A:
-
-```
-podman exec -it vaultA-2 vault operator raft join http://vaultA-1:8200
-podman exec -it vaultA-3 vault operator raft join http://vaultA-1:8200
-
-podman exec -it vaultA-2 vault operator unseal
-podman exec -it vaultA-3 vault operator unseal
-```
-
-Cluster A:
-
-```
-podman exec -it vaultB-2 vault operator raft join http://vaultB-1:8200
-podman exec -it vaultB-3 vault operator raft join http://vaultB-1:8200
-
-podman exec -it vaultB-2 vault operator unseal
-podman exec -it vaultB-3 vault operator unseal
-```
-
-Cluster C:
-
-```
-podman exec -it vaultC-2 vault operator raft join http://vaultC-1:8200
-podman exec -it vaultC-3 vault operator raft join http://vaultC-1:8200
-
-podman exec -it vaultC-2 vault operator unseal
-podman exec -it vaultC-3 vault operator unseal
-```
-
-Cluster D:
-
-```
-podman exec -it vaultD-2 vault operator raft join http://vaultD-1:8200
-podman exec -it vaultD-3 vault operator raft join http://vaultD-1:8200
-
-podman exec -it vaultD-2 vault operator unseal
-podman exec -it vaultD-3 vault operator unseal
-```
-
-### 4. Verify cluster state
+## Verify cluster state
 
 On any node of a cluster:
-
 ```
+cat clusterA/data/init.json
+podman logs vaultA-1 2>&1 | grep -i "root token"
+podman exec -it vaultA-1 vault login
 podman exec -it vaultA-1 vault operator raft list-peers
 ```
 
@@ -127,7 +67,7 @@ To stop and clean up the containers:
 
 ```
 podman-compose down -v
-rm -rf cluster{A..D}/data/node{1..3}
+find cluster{A..D}/data/node{1..3} cluster{A..D}/data/transit -mindepth 1 ! -name '.keepgit' -exec rm -rf {} +
 ```
 
 This will remove the containers and data volumes.
