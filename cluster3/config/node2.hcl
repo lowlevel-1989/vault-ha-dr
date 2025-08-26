@@ -4,12 +4,13 @@ storage "raft" {
 }
 
 listener "tcp" {
-  address     = "0.0.0.0:8200"
+  address         = "0.0.0.0:8200"
+  cluster_address = "0.0.0.0:8203"
   tls_disable = 1
 }
 
 api_addr     = "http://vault3-2:8200"
-cluster_addr = "http://vault3-2:8202"
+cluster_addr = "http://vault3-2:8203"
 ui = true
 
 # no es seguro para prod

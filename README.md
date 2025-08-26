@@ -8,6 +8,15 @@ Each cluster contains three nodes configured with:
 * Individual `api_addr` and `cluster_addr` per node
 * `storage "raft"` as HA backend
 
+address listen on start service docker. (8200)
+cluster_address listen post unseal.     (820x)
+
+show ports listen in container
+```
+podman exec -it vault1-2 sh
+netstat -tuln
+```
+
 ---
 
 ## Steps to run the clusters
