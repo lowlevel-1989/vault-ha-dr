@@ -31,10 +31,12 @@ podman-compose up -d
 
 This will launch 12 containers:
 
-* Cluster A → vaultA-1, vaultA-2, vaultA-3
-* Cluster B → vaultB-1, vaultB-2, vaultB-3
-* Cluster C → vaultC-1, vaultC-2, vaultC-3
-* Cluster D → vaultD-1, vaultD-2, vaultD-3
+```
+- Cluster A → vaultA-1, vaultA-2, vaultA-3
+- Cluster B → vaultB-1, vaultB-2, vaultB-3
+- Cluster C → vaultC-1, vaultC-2, vaultC-3
+- Cluster D → vaultD-1, vaultD-2, vaultD-3
+```
 
 ### 2. Initialize each cluster
 
