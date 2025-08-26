@@ -27,6 +27,7 @@ Podman Compose will build the image because services use `build: .` in the compo
 
 ```
 podman-compose up -d
+podman logs -f vaultA-1
 ```
 
 This will launch 12 containers:
