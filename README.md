@@ -36,6 +36,11 @@ podman exec -it vault1-1 vault operator init
 podman exec -it vault2-1 vault operator init
 podman exec -it vault3-1 vault operator init
 podman exec -it vault4-1 vault operator init
+
+podman exec -it vault1-1 vault operator unseal
+podman exec -it vault2-1 vault operator unseal
+podman exec -it vault3-1 vault operator unseal
+podman exec -it vault4-1 vault operator unseal
 ```
 
 Save the unseal keys and the root token printed by each `init`, they are unique per cluster.
@@ -49,6 +54,9 @@ Cluster 1:
 ```
 podman exec -it vault1-2 vault operator raft join http://vault1-1:8200
 podman exec -it vault1-3 vault operator raft join http://vault1-1:8200
+
+podman exec -it vault1-2 vault operator unseal
+podman exec -it vault1-3 vault operator unseal
 ```
 
 Cluster 2:
@@ -56,6 +64,9 @@ Cluster 2:
 ```
 podman exec -it vault2-2 vault operator raft join http://vault2-1:8200
 podman exec -it vault2-3 vault operator raft join http://vault2-1:8200
+
+podman exec -it vault2-2 vault operator unseal
+podman exec -it vault2-3 vault operator unseal
 ```
 
 Cluster 3:
@@ -63,6 +74,9 @@ Cluster 3:
 ```
 podman exec -it vault3-2 vault operator raft join http://vault3-1:8200
 podman exec -it vault3-3 vault operator raft join http://vault3-1:8200
+
+podman exec -it vault3-2 vault operator unseal
+podman exec -it vault3-3 vault operator unseal
 ```
 
 Cluster 4:
@@ -70,6 +84,9 @@ Cluster 4:
 ```
 podman exec -it vault4-2 vault operator raft join http://vault4-1:8200
 podman exec -it vault4-3 vault operator raft join http://vault4-1:8200
+
+podman exec -it vault4-2 vault operator unseal
+podman exec -it vault4-3 vault operator unseal
 ```
 
 ### 4. Verify cluster state
