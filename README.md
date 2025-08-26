@@ -30,7 +30,7 @@ podman-compose up -d
 podman logs -f vaultA-1
 ```
 
-This will launch 12 containers:
+This will launch 16 containers:
 
 ```
 - Cluster A → vaultA-transit, vaultA-1, vaultA-2, vaultA-3
