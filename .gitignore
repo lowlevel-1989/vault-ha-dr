@@ -1,2 +1,11 @@
 keys.txt
+clusterA/data/transit/*
+clusterB/data/transit/*
+clusterC/data/transit/*
+clusterD/data/transit/*
+!clusterA/data/transit/.keepgit
+!clusterB/data/transit/.keepgit
+!clusterC/data/transit/.keepgit
+!clusterD/data/transit/.keepgit
+*.json
 *.db

@@ -1,7 +1,7 @@
 x-vault-common: &vault-common
-  image: vault-alpine
+  image: vault-alpine:1.0.1
   build: .
-  command: vault server -config=/vault/config/vault.hcl
+  command: /entrypoint.sh
   # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
   # No es obligatorio, pero recomendado en producción por seguridad.
   cap_add: ["IPC_LOCK"]
@@ -18,12 +18,23 @@ networks:
 
 services:
   # --- Cluster A ---
+  vaultA-transit:
+    <<: *vault-common
+    container_name: vaultA-transit
+    volumes:
+      - ./clusterA/config/transit.hcl:/vault/config/vault.hcl:z
+      - ./clusterA/data/transit:/vault/data:z
+      - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+    networks: [clusterA_net]
+
   vaultA-1:
     <<: *vault-common
     container_name: vaultA-1
     volumes:
       - ./clusterA/config/node1.hcl:/vault/config/vault.hcl:z
       - ./clusterA/data/node1:/vault/data:z
+      - ./clusterA/data/transit:/vault/token:z
+      - ./run/entrypoint-leader.sh:/entrypoint.sh:z
     networks: [clusterA_net]
     ports: ["8211:8200"]
 
@@ -33,6 +44,8 @@ services:
     volumes:
       - ./clusterA/config/node2.hcl:/vault/config/vault.hcl:z
       - ./clusterA/data/node2:/vault/data:z
+      - ./clusterA/data/transit:/vault/token:z
+      - ./run/entrypoint.sh:/entrypoint.sh:z
     networks: [clusterA_net]
     ports: ["8212:8200"]
 
@@ -42,16 +55,29 @@ services:
     volumes:
       - ./clusterA/config/node3.hcl:/vault/config/vault.hcl:z
       - ./clusterA/data/node3:/vault/data:z
+      - ./clusterA/data/transit:/vault/token:z
+      - ./run/entrypoint.sh:/entrypoint.sh:z
     networks: [clusterA_net]
     ports: ["8213:8200"]
 
   # --- Cluster B ---
+  vaultB-transit:
+    <<: *vault-common
+    container_name: vaultB-transit
+    volumes:
+      - ./clusterB/config/transit.hcl:/vault/config/vault.hcl:z
+      - ./clusterB/data/transit:/vault/data:z
+      - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+    networks: [clusterB_net]
+
   vaultB-1:
     <<: *vault-common
     container_name: vaultB-1
     volumes:
       - ./clusterB/config/node1.hcl:/vault/config/vault.hcl:z
       - ./clusterB/data/node1:/vault/data:z
+      - ./clusterB/data/transit:/vault/token:z
+      - ./run/entrypoint-leader.sh:/entrypoint.sh:z
     networks: [clusterB_net]
     ports: ["8221:8200"]
 
@@ -61,6 +87,8 @@ services:
     volumes:
       - ./clusterB/config/node2.hcl:/vault/config/vault.hcl:z
       - ./clusterB/data/node2:/vault/data:z
+      - ./clusterB/data/transit:/vault/token:z
+      - ./run/entrypoint.sh:/entrypoint.sh:z
     networks: [clusterB_net]
     ports: ["8222:8200"]
 
@@ -70,16 +98,29 @@ services:
     volumes:
       - ./clusterB/config/node3.hcl:/vault/config/vault.hcl:z
       - ./clusterB/data/node3:/vault/data:z
+      - ./clusterB/data/transit:/vault/token:z
+      - ./run/entrypoint.sh:/entrypoint.sh:z
     networks: [clusterB_net]
     ports: ["8223:8200"]
 
   # --- Cluster C ---
+  vaultC-transit:
+    <<: *vault-common
+    container_name: vaultC-transit
+    volumes:
+      - ./clusterC/config/transit.hcl:/vault/config/vault.hcl:z
+      - ./clusterC/data/transit:/vault/data:z
+      - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+    networks: [clusterC_net]
+
   vaultC-1:
     <<: *vault-common
     container_name: vaultC-1
     volumes:
       - ./clusterC/config/node1.hcl:/vault/config/vault.hcl:z
       - ./clusterC/data/node1:/vault/data:z
+      - ./clusterC/data/transit:/vault/token:z
+      - ./run/entrypoint-leader.sh:/entrypoint.sh:z
     networks: [clusterC_net]
     ports: ["8231:8200"]
 
@@ -89,6 +130,8 @@ services:
     volumes:
       - ./clusterC/config/node2.hcl:/vault/config/vault.hcl:z
       - ./clusterC/data/node2:/vault/data:z
+      - ./clusterC/data/transit:/vault/token:z
+      - ./run/entrypoint.sh:/entrypoint.sh:z
     networks: [clusterC_net]
     ports: ["8232:8200"]
 
@@ -98,16 +141,29 @@ services:
     volumes:
       - ./clusterC/config/node3.hcl:/vault/config/vault.hcl:z
       - ./clusterC/data/node3:/vault/data:z
+      - ./clusterC/data/transit:/vault/token:z
+      - ./run/entrypoint.sh:/entrypoint.sh:z
     networks: [clusterC_net]
     ports: ["8233:8200"]
 
   # --- Cluster D ---
+  vaultD-transit:
+    <<: *vault-common
+    container_name: vaultD-transit
+    volumes:
+      - ./clusterD/config/transit.hcl:/vault/config/vault.hcl:z
+      - ./clusterD/data/transit:/vault/data:z
+      - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+    networks: [clusterD_net]
+
   vaultD-1:
     <<: *vault-common
     container_name: vaultD-1
     volumes:
       - ./clusterD/config/node1.hcl:/vault/config/vault.hcl:z
       - ./clusterD/data/node1:/vault/data:z
+      - ./clusterD/data/transit:/vault/token:z
+      - ./run/entrypoint-leader.sh:/entrypoint.sh:z
     networks: [clusterD_net]
     ports: ["8241:8200"]
 
@@ -117,6 +173,8 @@ services:
     volumes:
       - ./clusterD/config/node2.hcl:/vault/config/vault.hcl:z
       - ./clusterD/data/node2:/vault/data:z
+      - ./clusterD/data/transit:/vault/token:z
+      - ./run/entrypoint.sh:/entrypoint.sh:z
     networks: [clusterD_net]
     ports: ["8242:8200"]
 
@@ -126,5 +184,7 @@ services:
     volumes:
       - ./clusterD/config/node3.hcl:/vault/config/vault.hcl:z
       - ./clusterD/data/node3:/vault/data:z
+      - ./clusterD/data/transit:/vault/token:z
+      - ./run/entrypoint.sh:/entrypoint.sh:z
     networks: [clusterD_net]
     ports: ["8243:8200"]
