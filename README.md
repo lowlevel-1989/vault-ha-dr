@@ -76,5 +76,5 @@ This will remove the containers and data volumes.
 ## References
 
 - https://developer.hashicorp.com/vault/tutorials/raft/raft-storage
-
+- https://developer.hashicorp.com/vault/tutorials/auto-unseal/autounseal-transit
 
