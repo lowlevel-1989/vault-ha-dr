@@ -2,6 +2,8 @@ x-vault-common: &vault-common
   image: vault-alpine
   build: .
   command: vault server -config=/vault/config/vault.hcl
+  # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
+  # No es obligatorio, pero recomendado en producción por seguridad.
   cap_add: ["IPC_LOCK"]
   environment:
     - VAULT_ADDR=http://0.0.0.0:8200
@@ -24,11 +26,6 @@ services:
       - ./cluster1/data/node1:/vault/data:z
     networks: [cluster1_net]
     ports: ["8211:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
 
   vault1-2:
     <<: *vault-common
@@ -38,11 +35,6 @@ services:
       - ./cluster1/data/node2:/vault/data:z
     networks: [cluster1_net]
     ports: ["8212:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
 
   vault1-3:
     <<: *vault-common
@@ -52,11 +44,6 @@ services:
       - ./cluster1/data/node3:/vault/data:z
     networks: [cluster1_net]
     ports: ["8213:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
 
   # --- Cluster 2 ---
   vault2-1:
@@ -67,11 +54,6 @@ services:
       - ./cluster2/data/node1:/vault/data:z
     networks: [cluster2_net]
     ports: ["8221:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
 
   vault2-2:
     <<: *vault-common
@@ -81,11 +63,6 @@ services:
       - ./cluster2/data/node2:/vault/data:z
     networks: [cluster2_net]
     ports: ["8222:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
 
   vault2-3:
     <<: *vault-common
@@ -95,11 +72,6 @@ services:
       - ./cluster2/data/node3:/vault/data:z
     networks: [cluster2_net]
     ports: ["8223:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
 
   # --- Cluster 3 ---
   vault3-1:
@@ -110,11 +82,6 @@ services:
       - ./cluster3/data/node1:/vault/data:z
     networks: [cluster3_net]
     ports: ["8231:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
 
   vault3-2:
     <<: *vault-common
@@ -124,11 +91,6 @@ services:
       - ./cluster3/data/node2:/vault/data:z
     networks: [cluster3_net]
     ports: ["8232:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
 
   vault3-3:
     <<: *vault-common
@@ -138,11 +100,6 @@ services:
       - ./cluster3/data/node3:/vault/data:z
     networks: [cluster3_net]
     ports: ["8233:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
 
   # --- Cluster 4 ---
   vault4-1:
@@ -153,11 +110,6 @@ services:
       - ./cluster4/data/node1:/vault/data:z
     networks: [cluster4_net]
     ports: ["8241:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
 
   vault4-2:
     <<: *vault-common
@@ -167,11 +119,6 @@ services:
       - ./cluster4/data/node2:/vault/data:z
     networks: [cluster4_net]
     ports: ["8242:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
 
   vault4-3:
     <<: *vault-common
@@ -181,9 +128,3 @@ services:
       - ./cluster4/data/node3:/vault/data:z
     networks: [cluster4_net]
     ports: ["8243:8200"]
-    # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
-    # No es obligatorio, pero recomendado en producción por seguridad.
-    cap_add: ["IPC_LOCK"]
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200
-
