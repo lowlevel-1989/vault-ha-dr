@@ -1,6 +1,10 @@
 storage "raft" {
   path    = "/vault/data"
-  node_id = "c1-node3"
+  node_id = "A-node3"
+
+  retry_join {
+    leader_api_addr = "http://vaultA-1:8200"
+  }
 }
 
 listener "tcp" {
@@ -9,8 +13,8 @@ listener "tcp" {
   tls_disable = 1
 }
 
-api_addr     = "http://vault1-3:8200"
-cluster_addr = "http://vault1-3:8201"
+api_addr     = "http://vaultA-3:8200"
+cluster_addr = "http://vaultA-3:8201"
 ui = true
 
 # no es seguro para prod
