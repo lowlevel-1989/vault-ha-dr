@@ -33,7 +33,6 @@ services:
     networks: 
       vault_network:
         ipv4_address: 10.9.1.10
-    ports: ["8210:8200"]
 
   vaultA-1:
     <<: *vault-common
