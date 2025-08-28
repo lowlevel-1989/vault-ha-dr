@@ -7,6 +7,7 @@ x-vault-common: &vault-common
   cap_add: ["IPC_LOCK"]
   environment:
     - VAULT_ADDR=http://0.0.0.0:8200
+    - VAULT_LICENSE_PATH=/opt/vault/license
   labels:
     - vault-cluster
 
@@ -25,6 +26,7 @@ services:
       - ./clusterA/config/transit.hcl:/vault/config/vault.hcl:z
       - ./clusterA/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterA_net]
 
   vaultA-1:
@@ -35,6 +37,7 @@ services:
       - ./clusterA/data/node1:/vault/data:z
       - ./clusterA/data/transit:/vault/token:z
       - ./run/entrypoint-leader.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterA_net]
     ports: ["8211:8200"]
 
@@ -46,6 +49,7 @@ services:
       - ./clusterA/data/node2:/vault/data:z
       - ./clusterA/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterA_net]
     ports: ["8212:8200"]
 
@@ -57,6 +61,7 @@ services:
       - ./clusterA/data/node3:/vault/data:z
       - ./clusterA/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterA_net]
     ports: ["8213:8200"]
 
@@ -68,6 +73,7 @@ services:
       - ./clusterB/config/transit.hcl:/vault/config/vault.hcl:z
       - ./clusterB/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterB_net]
 
   vaultB-1:
@@ -78,6 +84,7 @@ services:
       - ./clusterB/data/node1:/vault/data:z
       - ./clusterB/data/transit:/vault/token:z
       - ./run/entrypoint-leader.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterB_net]
     ports: ["8221:8200"]
 
@@ -89,6 +96,7 @@ services:
       - ./clusterB/data/node2:/vault/data:z
       - ./clusterB/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterB_net]
     ports: ["8222:8200"]
 
@@ -100,6 +108,7 @@ services:
       - ./clusterB/data/node3:/vault/data:z
       - ./clusterB/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterB_net]
     ports: ["8223:8200"]
 
@@ -111,6 +120,7 @@ services:
       - ./clusterC/config/transit.hcl:/vault/config/vault.hcl:z
       - ./clusterC/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterC_net]
 
   vaultC-1:
@@ -121,6 +131,7 @@ services:
       - ./clusterC/data/node1:/vault/data:z
       - ./clusterC/data/transit:/vault/token:z
       - ./run/entrypoint-leader.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterC_net]
     ports: ["8231:8200"]
 
@@ -132,6 +143,7 @@ services:
       - ./clusterC/data/node2:/vault/data:z
       - ./clusterC/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterC_net]
     ports: ["8232:8200"]
 
@@ -143,6 +155,7 @@ services:
       - ./clusterC/data/node3:/vault/data:z
       - ./clusterC/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterC_net]
     ports: ["8233:8200"]
 
@@ -154,6 +167,7 @@ services:
       - ./clusterD/config/transit.hcl:/vault/config/vault.hcl:z
       - ./clusterD/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterD_net]
 
   vaultD-1:
@@ -164,6 +178,7 @@ services:
       - ./clusterD/data/node1:/vault/data:z
       - ./clusterD/data/transit:/vault/token:z
       - ./run/entrypoint-leader.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterD_net]
     ports: ["8241:8200"]
 
@@ -175,6 +190,7 @@ services:
       - ./clusterD/data/node2:/vault/data:z
       - ./clusterD/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterD_net]
     ports: ["8242:8200"]
 
@@ -186,5 +202,6 @@ services:
       - ./clusterD/data/node3:/vault/data:z
       - ./clusterD/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./license_vault.lic:/opt/vault/license:z
     networks: [clusterD_net]
     ports: ["8243:8200"]
