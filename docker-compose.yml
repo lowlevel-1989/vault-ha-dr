@@ -6,16 +6,19 @@ x-vault-common: &vault-common
   # No es obligatorio, pero recomendado en producción por seguridad.
   cap_add: ["IPC_LOCK"]
   environment:
-    - VAULT_ADDR=http://0.0.0.0:8200
+    - VAULT_ADDR=http://127.0.0.1:8200
     - VAULT_LICENSE_PATH=/opt/vault/license
   labels:
     - vault-cluster
 
 networks:
-  clusterA_net:
-  clusterB_net:
-  clusterC_net:
-  clusterD_net:
+   cluster_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.9.0.0/16
+          ip_range: 10.9.0.0/16
+          gateway: 10.9.0.1 
 
 services:
   # --- Cluster A ---
@@ -27,7 +30,10 @@ services:
       - ./clusterA/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterA_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.1.10
+    ports: ["8210:8200"]
 
   vaultA-1:
     <<: *vault-common
@@ -38,7 +44,9 @@ services:
       - ./clusterA/data/transit:/vault/token:z
       - ./run/entrypoint-leader.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterA_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.1.1  
     ports: ["8211:8200"]
 
   vaultA-2:
@@ -50,7 +58,9 @@ services:
       - ./clusterA/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterA_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.1.2
     ports: ["8212:8200"]
 
   vaultA-3:
@@ -62,7 +72,9 @@ services:
       - ./clusterA/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterA_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.1.3
     ports: ["8213:8200"]
 
   # --- Cluster B ---
@@ -74,7 +86,9 @@ services:
       - ./clusterB/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterB_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.2.10
 
   vaultB-1:
     <<: *vault-common
@@ -85,7 +99,9 @@ services:
       - ./clusterB/data/transit:/vault/token:z
       - ./run/entrypoint-leader.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterB_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.2.1
     ports: ["8221:8200"]
 
   vaultB-2:
@@ -97,7 +113,9 @@ services:
       - ./clusterB/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterB_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.2.2
     ports: ["8222:8200"]
 
   vaultB-3:
@@ -109,7 +127,9 @@ services:
       - ./clusterB/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterB_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.2.3
     ports: ["8223:8200"]
 
   # --- Cluster C ---
@@ -121,7 +141,9 @@ services:
       - ./clusterC/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterC_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.3.10
 
   vaultC-1:
     <<: *vault-common
@@ -132,7 +154,9 @@ services:
       - ./clusterC/data/transit:/vault/token:z
       - ./run/entrypoint-leader.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterC_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.3.1
     ports: ["8231:8200"]
 
   vaultC-2:
@@ -144,7 +168,9 @@ services:
       - ./clusterC/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterC_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.3.2
     ports: ["8232:8200"]
 
   vaultC-3:
@@ -156,7 +182,9 @@ services:
       - ./clusterC/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterC_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.3.3
     ports: ["8233:8200"]
 
   # --- Cluster D ---
@@ -168,7 +196,9 @@ services:
       - ./clusterD/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterD_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.4.10
 
   vaultD-1:
     <<: *vault-common
@@ -179,7 +209,9 @@ services:
       - ./clusterD/data/transit:/vault/token:z
       - ./run/entrypoint-leader.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterD_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.4.1
     ports: ["8241:8200"]
 
   vaultD-2:
@@ -191,7 +223,9 @@ services:
       - ./clusterD/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterD_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.4.2
     ports: ["8242:8200"]
 
   vaultD-3:
@@ -203,5 +237,7 @@ services:
       - ./clusterD/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
       - ./license_vault.lic:/opt/vault/license:z
-    networks: [clusterD_net]
+    networks: 
+      cluster_network:
+        ipv4_address: 10.9.4.3
     ports: ["8243:8200"]
