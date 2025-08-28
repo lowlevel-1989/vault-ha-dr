@@ -43,7 +43,7 @@ This will launch 16 containers:
 
 On any node of a cluster:
 ```
-cat clusterA/data/init.json
+cat cluster{A..D}/data/node1/init.json
 podman logs vaultA-1 2>&1 | grep -i "root token"
 podman exec -it vaultA-1 vault login
 podman exec -it vaultA-1 vault operator raft list-peers
