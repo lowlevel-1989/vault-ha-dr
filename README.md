@@ -13,7 +13,7 @@ cluster_address listen post unseal.     (820x)
 
 show ports listen in container
 ```
-podman exec -it vaultA-2 sh
+podman container exec -it vaultA-2 sh
 netstat -tuln
 ```
 
@@ -27,7 +27,7 @@ Podman Compose will build the image because services use `build: .` in the compo
 
 ```
 podman-compose up -d
-podman logs -f vaultA-1
+podman container logs -f vaultA-1
 ```
 
 This will launch 16 containers:
@@ -44,9 +44,9 @@ This will launch 16 containers:
 On any node of a cluster:
 ```
 cat cluster{A..D}/data/node1/init.json
-podman logs vaultA-1 2>&1 | grep -i "root token"
-podman exec -it vaultA-1 vault login
-podman exec -it vaultA-1 vault operator raft list-peers
+podman container logs vaultA-1 2>&1 | grep -i "root token"
+podman container exec -it vaultA-1 vault login
+podman container exec -it vaultA-1 vault operator raft list-peers
 ```
 
 You should see all 3 nodes (leader + 2 followers).
