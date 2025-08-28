@@ -29,3 +29,4 @@ clusterD/data/transit/unseal_key-vault_1
 keys.txt
 *.json
 *.db
+*.lic
