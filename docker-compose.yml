@@ -8,9 +8,8 @@ x-vault-common: &vault-common
   # IPC_LOCK permite a Vault usar mlock y evitar que datos sensibles se escriban en swap.
   # No es obligatorio, pero recomendado en producción por seguridad.
   cap_add: ["IPC_LOCK"]
-  environment:
-    - VAULT_ADDR=http://127.0.0.1:8200
-    - VAULT_LICENSE=${VAULT_LICENSE}
+  env_file:
+    - .env
   labels:
     - vault-cluster
 
@@ -44,6 +43,8 @@ services:
       - ./clusterA/data/node1:/vault/data:z
       - ./clusterA/data/transit:/vault/token:z
       - ./run/entrypoint-leader.sh:/entrypoint.sh:z
+    environment:
+      DR_ROL: PRIMARY
     networks: 
       vault_network:
         ipv4_address: 10.9.1.11  
@@ -95,6 +96,8 @@ services:
       - ./clusterB/data/node1:/vault/data:z
       - ./clusterB/data/transit:/vault/token:z
       - ./run/entrypoint-leader.sh:/entrypoint.sh:z
+    environment:
+      DR_ROL: SECONDARY
     networks: 
       vault_network:
         ipv4_address: 10.9.2.11
