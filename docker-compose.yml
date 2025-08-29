@@ -14,7 +14,7 @@ x-vault-common: &vault-common
 networks:
    vault_network:
     ipam:
-      driver: bridge
+      driver: default
       config:
         - subnet: 10.9.0.0/16
           ip_range: 10.9.0.0/16
