@@ -1,10 +1,13 @@
 FROM alpine:3.20
 
-ARG VAULT_VERSION=1.19.0+ent
-RUN apk add --no-cache wget curl jq unzip ca-certificates \
-    && wget https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip \
-    && unzip vault_${VAULT_VERSION}_linux_amd64.zip \
-    && mv vault /usr/local/bin/ \
-    && rm vault_${VAULT_VERSION}_linux_amd64.zip
+ARG VAULT_ENTERPRISE=false
+ARG VAULT_VERSION=1.19.0
+
+RUN apk add --no-cache wget curl jq unzip ca-certificates
+
+COPY install-vault.sh /tmp/install-vault.sh
+RUN chmod +x /tmp/install-vault.sh \
+    && VAULT_ENTERPRISE=${VAULT_ENTERPRISE} VAULT_VERSION=${VAULT_VERSION} /tmp/install-vault.sh \
+    && rm /tmp/install-vault.sh
 
 CMD ["vault", "--version"]
