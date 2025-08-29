@@ -83,5 +83,6 @@ This will remove the containers and data volumes.
 - https://developer.hashicorp.com/vault/tutorials/day-one-raft/multi-cluster-architecture
 - https://developer.hashicorp.com/vault/tutorials/enterprise/disaster-recovery#additional-discussion
 - https://releases.hashicorp.com/vault
-- https://developer.hashicorp.com/vault/tutorials/enterprise/hashicorp-enterprise-license
+- https://developer.hashicorp.com/vault/tutorials/enterprise/hashicorp-enterprise-lichttps://developer.hashicorp.com/vault/tutorials/enterprise/disaster-recovery#enable-dr-primary-replicationense
+- 
 
