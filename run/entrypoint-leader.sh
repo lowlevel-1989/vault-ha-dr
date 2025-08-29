@@ -29,5 +29,32 @@ if ! vault status >/dev/null 2>&1; then
   echo "--- ROOT TOKEN: $(jq -r '.root_token' /vault/data/init.json)"
 fi
 
-wait $VAULT_PID
+# Comprobar si la replicacion esta activa
+REPLICATION=$(vault read sys/replication/dr/status --format=json)
+echo $REPLICATION
+REPLICATION_STATUS=$(echo "$REPLICATION" | jq -r '.data.mode')
+echo $REPLICATION_STATUS
+echo $DR_ROL
 
+if [ ["$REPLICATION_STATUS" != "disabled"] && [ -v $DR_ROL ] ]; then
+    echo "Comprobando rol"
+    if [ "$DR_ROL" == "PRIMARY" ]; then
+      echo "Habilitando rol PRIMARY"
+      vault write -f sys/replication/dr/primary/enable
+      TOKEN_DATA=$(vault write sys/replication/dr/primary/secondary-token id="dr-secondary")
+      WRAPPING_TOKEN=$(echo "$TOKEN_DATA" | jq -r '.data.wrapping_token')
+      echo "$WRAPPING_TOKEN" >> /vault/data/wrapping_token
+    elif [ "$DR_ROL" == "SECONDARY" ]; then
+      echo "Habilitando rol SECONDARY"
+      TOKEN_FILE="/vault/token/wrapping_token-vault-1"
+      until [ -f "$TOKEN_FILE" ]; do
+        echo "Waiting for wrapping token from nodo primario"
+        sleep 15
+      done
+      vault write sys/replication/dr/secondary/enable token="$(cat $TOKEN_FILE)"
+    fi
+  
+  vault read sys/replication/dr/status
+fi
+
+wait $VAULT_PID
