@@ -43,7 +43,7 @@ services:
       - ./clusterA/config/node1.hcl:/vault/config/vault.hcl:z
       - ./clusterA/data/node1:/vault/data:z
       - ./clusterA/data/transit:/vault/token:z
-      - ./run/entrypoint-leader.sh:/entrypoint.sh:z
+      - ./run/entrypoint-leader-a.sh:/entrypoint.sh:z
     networks: 
       vault_network:
         ipv4_address: 10.9.1.11  
@@ -94,7 +94,7 @@ services:
       - ./clusterB/config/node1.hcl:/vault/config/vault.hcl:z
       - ./clusterB/data/node1:/vault/data:z
       - ./clusterB/data/transit:/vault/token:z
-      - ./run/entrypoint-leader.sh:/entrypoint.sh:z
+      - ./run/entrypoint-leader-b.sh:/entrypoint.sh:z
     networks: 
       vault_network:
         ipv4_address: 10.9.2.11
@@ -145,7 +145,7 @@ services:
       - ./clusterC/config/node1.hcl:/vault/config/vault.hcl:z
       - ./clusterC/data/node1:/vault/data:z
       - ./clusterC/data/transit:/vault/token:z
-      - ./run/entrypoint-leader.sh:/entrypoint.sh:z
+      - ./run/entrypoint-leader-c.sh:/entrypoint.sh:z
     networks: 
       vault_network:
         ipv4_address: 10.9.3.11
@@ -196,7 +196,7 @@ services:
       - ./clusterD/config/node1.hcl:/vault/config/vault.hcl:z
       - ./clusterD/data/node1:/vault/data:z
       - ./clusterD/data/transit:/vault/token:z
-      - ./run/entrypoint-leader.sh:/entrypoint.sh:z
+      - ./run/entrypoint-leader-d.sh:/entrypoint.sh:z
     networks: 
       vault_network:
         ipv4_address: 10.9.4.11
