@@ -32,6 +32,7 @@ services:
       - ./clusterA/config/transit.hcl:/vault/config/vault.hcl:z
       - ./clusterA/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.1.10
@@ -44,6 +45,7 @@ services:
       - ./clusterA/data/node1:/vault/data:z
       - ./clusterA/data/transit:/vault/token:z
       - ./run/entrypoint-leader-a.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.1.11  
@@ -57,6 +59,7 @@ services:
       - ./clusterA/data/node2:/vault/data:z
       - ./clusterA/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.1.12
@@ -70,6 +73,7 @@ services:
       - ./clusterA/data/node3:/vault/data:z
       - ./clusterA/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.1.13
@@ -83,6 +87,7 @@ services:
       - ./clusterB/config/transit.hcl:/vault/config/vault.hcl:z
       - ./clusterB/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.2.10
@@ -95,6 +100,7 @@ services:
       - ./clusterB/data/node1:/vault/data:z
       - ./clusterB/data/transit:/vault/token:z
       - ./run/entrypoint-leader-b.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.2.11
@@ -108,6 +114,7 @@ services:
       - ./clusterB/data/node2:/vault/data:z
       - ./clusterB/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.2.12
@@ -121,6 +128,7 @@ services:
       - ./clusterB/data/node3:/vault/data:z
       - ./clusterB/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.2.13
@@ -134,6 +142,7 @@ services:
       - ./clusterC/config/transit.hcl:/vault/config/vault.hcl:z
       - ./clusterC/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.3.10
@@ -146,6 +155,7 @@ services:
       - ./clusterC/data/node1:/vault/data:z
       - ./clusterC/data/transit:/vault/token:z
       - ./run/entrypoint-leader-c.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.3.11
@@ -159,6 +169,7 @@ services:
       - ./clusterC/data/node2:/vault/data:z
       - ./clusterC/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.3.12
@@ -172,6 +183,7 @@ services:
       - ./clusterC/data/node3:/vault/data:z
       - ./clusterC/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.3.13
@@ -185,6 +197,7 @@ services:
       - ./clusterD/config/transit.hcl:/vault/config/vault.hcl:z
       - ./clusterD/data/transit:/vault/data:z
       - ./run/entrypoint-transit.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.4.10
@@ -197,6 +210,7 @@ services:
       - ./clusterD/data/node1:/vault/data:z
       - ./clusterD/data/transit:/vault/token:z
       - ./run/entrypoint-leader-d.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.4.11
@@ -210,6 +224,7 @@ services:
       - ./clusterD/data/node2:/vault/data:z
       - ./clusterD/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.4.12
@@ -223,6 +238,7 @@ services:
       - ./clusterD/data/node3:/vault/data:z
       - ./clusterD/data/transit:/vault/token:z
       - ./run/entrypoint.sh:/entrypoint.sh:z
+      - ./shared:/vault/shared:z
     networks: 
       vault_network:
         ipv4_address: 10.9.4.13

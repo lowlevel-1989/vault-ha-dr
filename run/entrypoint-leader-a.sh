@@ -26,7 +26,18 @@ if ! vault status >/dev/null 2>&1; then
   echo "Initializing cluster with Transit seal..."
   vault operator init -format json > /vault/data/init.json
 
-  echo "--- ROOT TOKEN: $(jq -r '.root_token' /vault/data/init.json)"
+  ROOT_TOKEN=$(jq -r '.root_token' /vault/data/init.json)
+
+  echo "--- ROOT TOKEN: $ROOT_TOKEN"
+  unset VAULT_TOKEN
+
+  # Disaster Recovery configuracion 
+  vault login $ROOT_TOKEN
+  vault write -f sys/replication/dr/primary/enable
+  TOKEN_DATA=$(vault write -format json sys/replication/dr/primary/secondary-token id="dr-secondary")
+   echo $TOKEN_DATA
+  WRAPPING_TOKEN=$(echo "$TOKEN_DATA" | jq -r '.wrap_info.token')
+  echo "$WRAPPING_TOKEN" > /vault/shared/cluster_a_wrapping_token
 fi
 
 wait $VAULT_PID
