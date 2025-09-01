@@ -1,30 +1,30 @@
-clusterA/data/transit/core
-clusterA/data/transit/logical
-clusterA/data/transit/sys
-clusterA/data/transit/init_done
-clusterA/data/transit/root_token-vault_1
-clusterA/data/transit/unseal_key-vault_1
+cluster-a/data/transit/core
+cluster-a/data/transit/logical
+cluster-a/data/transit/sys
+cluster-a/data/transit/init_done
+cluster-a/data/transit/root_token-vault_1
+cluster-a/data/transit/unseal_key-vault_1
 
-clusterB/data/transit/core
-clusterB/data/transit/logical
-clusterB/data/transit/sys
-clusterB/data/transit/init_done
-clusterB/data/transit/root_token-vault_1
-clusterB/data/transit/unseal_key-vault_1
+cluster-b/data/transit/core
+cluster-b/data/transit/logical
+cluster-b/data/transit/sys
+cluster-b/data/transit/init_done
+cluster-b/data/transit/root_token-vault_1
+cluster-b/data/transit/unseal_key-vault_1
 
-clusterC/data/transit/core
-clusterC/data/transit/logical
-clusterC/data/transit/sys
-clusterC/data/transit/init_done
-clusterC/data/transit/root_token-vault_1
-clusterC/data/transit/unseal_key-vault_1
+cluster-c/data/transit/core
+cluster-c/data/transit/logical
+cluster-c/data/transit/sys
+cluster-c/data/transit/init_done
+cluster-c/data/transit/root_token-vault_1
+cluster-c/data/transit/unseal_key-vault_1
 
-clusterD/data/transit/core
-clusterD/data/transit/logical
-clusterD/data/transit/sys
-clusterD/data/transit/init_done
-clusterD/data/transit/root_token-vault_1
-clusterD/data/transit/unseal_key-vault_1
+cluster-d/data/transit/core
+cluster-d/data/transit/logical
+cluster-d/data/transit/sys
+cluster-d/data/transit/init_done
+cluster-d/data/transit/root_token-vault_1
+cluster-d/data/transit/unseal_key-vault_1
 
 keys.txt
 *.json
