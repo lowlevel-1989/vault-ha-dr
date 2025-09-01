@@ -37,7 +37,7 @@ if ! vault status >/dev/null 2>&1; then
   # utilizarlo para login temporal
   VAULT_TOKEN="$(jq -r '.root_token' /vault/data/init.json)"
 
-  echo "--- ROOT TOKEN: VAULT_TOKEN"
+  echo "--- ROOT TOKEN: $VAULT_TOKEN"
 fi
 
 wait $VAULT_PID

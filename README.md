@@ -71,7 +71,7 @@ To stop and clean up the containers:
 
 ```
 podman-compose down -v
-find cluster-{a..d}/data/node{1..3} cluster-{a..d}/data/transit -mindepth 1 ! -name '.gitkeep' -exec rm -rf {} +
+find cluster-{a..d}/data/node{1..3} cluster-{a..d}/data/transit shared -mindepth 1 ! -name '.gitkeep' -exec rm -rf {} +
 ```
 
 This will remove the containers and data volumes.
