@@ -26,6 +26,7 @@ netstat -tuln
 Podman Compose will build the image because services use `build: .` in the compose file:
 
 ```
+podman build --build-arg VAULT_ENTERPRISE=true --build-arg VAULT_VERSION=1.19.0  -t vault-alpine:1.0.1 .
 podman-compose up -d
 podman container logs -f vaultA-1
 ```
