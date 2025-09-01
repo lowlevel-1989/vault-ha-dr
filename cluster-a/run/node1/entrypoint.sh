@@ -40,7 +40,12 @@ vault_dr_enable() {
 
   echo --- DR[2]. Generate a secondary token.
   sleep 2
-  vault write --format json sys/replication/dr/primary/secondary-token id="dr-secondary"
+  RESPONSE=$(vault write --format json sys/replication/dr/primary/secondary-token id="dr-secondary")
+  SECONDARY_TOKEN=$(echo "$RESPONSE" | jq -r ".wrap_info.token")
+  echo $SECONDARY_TOKEN > /vault/shared/cluster_a_wrapping_token
+  touch /vault/shared/cluster_a_wrapping_token_ready
+
+  echo secondary-token: $SECONDARY_TOKEN
 
   unset VAULT_TOKEN
 }

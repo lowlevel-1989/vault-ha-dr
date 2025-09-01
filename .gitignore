@@ -1,3 +1,6 @@
+shared/cluster_a_wrapping_token
+shared/cluster_a_wrapping_token_ready
+
 cluster-a/data/transit/core
 cluster-a/data/transit/logical
 cluster-a/data/transit/sys

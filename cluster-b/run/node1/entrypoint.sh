@@ -21,6 +21,36 @@ until curl -s http://127.0.0.1:8200/v1/sys/health >/dev/null; do
   sleep 2
 done
 
+wait_unseal_for_node_2_and_3() {
+
+  until [ "$(curl -s http://vaultB-2:8200/v1/sys/seal-status | jq -r '.sealed')" = "false" ]; do
+    echo "Waiting for Vault node 2..."
+    sleep 2
+  done
+
+  until [ "$(curl -s http://vaultB-3:8200/v1/sys/seal-status | jq -r '.sealed')" = "false" ]; do
+    echo "Waiting for Vault node 3..."
+    sleep 2
+  done
+  sleep 2
+}
+
+vault_dr_enable_with_cluster_a() {
+  until [ -f "/vault/shared/cluster_a_wrapping_token_ready" ]; do
+    echo "Waiting for cluster_a_wrapping_token from cluster A..."
+    sleep 2
+  done
+
+  echo --- DR[1] Enable DR replication on the secondary cluster.
+
+  export VAULT_TOKEN=$1
+  WRAPPING_TOKEN=$(cat /vault/shared/cluster_a_wrapping_token)
+
+  vault write sys/replication/dr/secondary/enable token="$WRAPPING_TOKEN"
+
+  unset VAULT_TOKEN
+}
+
 vault_init() {
   echo "Initializing cluster with Transit seal..."
   vault operator init -format json > /vault/data/init.json
@@ -37,7 +67,10 @@ if ! vault status >/dev/null 2>&1; then
   # utilizarlo para login temporal
   VAULT_TOKEN="$(jq -r '.root_token' /vault/data/init.json)"
 
-  echo "--- ROOT TOKEN: VAULT_TOKEN"
+  echo "--- ROOT TOKEN: $VAULT_TOKEN"
+
+  wait_unseal_for_node_2_and_3
+  vault_dr_enable_with_cluster_a $VAULT_TOKEN
 fi
 
 wait $VAULT_PID
