@@ -55,7 +55,7 @@ if ! vault status >/dev/null 2>&1; then
 
   echo "--- ROOT TOKEN: $VAULT_TOKEN"
 
-  # vault_dr_enable_with_cluster_a $VAULT_TOKEN
+  vault_dr_enable_with_cluster_a $VAULT_TOKEN
 fi
 
 wait $VAULT_PID
