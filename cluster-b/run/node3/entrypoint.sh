@@ -22,4 +22,3 @@ until curl -s http://127.0.0.1:8200/v1/sys/health >/dev/null; do
 done
 
 wait $VAULT_PID
-
