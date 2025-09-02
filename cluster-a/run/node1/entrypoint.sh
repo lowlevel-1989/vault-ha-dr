@@ -50,17 +50,35 @@ vault_dr_enable() {
   unset VAULT_TOKEN
 }
 
+vault_create_period_token() {
+  export VAULT_TOKEN=$1
+
+  # ref: https://developer.hashicorp.com/vault/docs/concepts/tokens#periodic-tokens
+  # lo utiliza el agente para authenticar y renovarlo
+  # el request de renew lo ejecuta en funcion del 
+  # tiempo asignado al period
+  RESPONSE=$(vault token create -format json -period=5m -orphan=true)
+  PERIOD_TOKEN=$(echo "$RESPONSE" | jq -r ".auth.client_token")
+
+  echo $PERIOD_TOKEN > /vault/shared/cluster_a_period_token_5m
+
+  unset VAULT_TOKEN
+}
+
 # Solo inicializar si no lo está
 # Este paso solo se ejecuta la primera vez que se levanta el cluster
 if ! vault status >/dev/null 2>&1; then
   vault_init
 
   # utilizarlo para login temporal
-  VAULT_TOKEN="$(jq -r '.root_token' /vault/data/init.json)"
+  INIT_TOKEN="$(jq -r '.root_token' /vault/data/init.json)"
 
-  echo "--- ROOT TOKEN: $VAULT_TOKEN"
+  echo "--- ROOT TOKEN: $INIT_TOKEN"
 
-  vault_dr_enable $VAULT_TOKEN
+  vault_create_period_token $INIT_TOKEN
+  vault_dr_enable $INIT_TOKEN
+
+  unset INIT_TOKEN
 fi
 
 wait $VAULT_PID
