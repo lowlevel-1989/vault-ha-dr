@@ -1,5 +1,8 @@
 shared/cluster_a_wrapping_token
 shared/cluster_a_wrapping_token_ready
+shared/cluster_a_period_token_5m
+shared/cluster_c_wrapping_token
+shared/cluster_c_wrapping_token_ready
 
 cluster-a/data/transit/core
 cluster-a/data/transit/logical
@@ -7,6 +10,7 @@ cluster-a/data/transit/sys
 cluster-a/data/transit/init_done
 cluster-a/data/transit/root_token-vault_1
 cluster-a/data/transit/unseal_key-vault_1
+cluster-a/data/agent/vault-token-via-agent
 
 cluster-b/data/transit/core
 cluster-b/data/transit/logical
@@ -14,6 +18,7 @@ cluster-b/data/transit/sys
 cluster-b/data/transit/init_done
 cluster-b/data/transit/root_token-vault_1
 cluster-b/data/transit/unseal_key-vault_1
+cluster-b/data/agent/vault-token-via-agent
 
 cluster-c/data/transit/core
 cluster-c/data/transit/logical
@@ -21,6 +26,7 @@ cluster-c/data/transit/sys
 cluster-c/data/transit/init_done
 cluster-c/data/transit/root_token-vault_1
 cluster-c/data/transit/unseal_key-vault_1
+cluster-c/data/agent/vault-token-via-agent
 
 cluster-d/data/transit/core
 cluster-d/data/transit/logical
@@ -28,6 +34,7 @@ cluster-d/data/transit/sys
 cluster-d/data/transit/init_done
 cluster-d/data/transit/root_token-vault_1
 cluster-d/data/transit/unseal_key-vault_1
+cluster-d/data/agent/vault-token-via-agent
 
 keys.txt
 *.json

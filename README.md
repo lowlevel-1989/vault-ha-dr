@@ -31,10 +31,10 @@ podman-compose up -d
 podman container logs -f vaultA-1
 ```
 
-This will launch 16 containers:
+This will launch 17 containers:
 
 ```
-- Cluster A → vaultA-transit, vaultA-1, vaultA-2, vaultA-3
+- Cluster A → vaultA-transit, vaultA-1, vaultA-2, vaultA-3, vault-agent
 - Cluster B → vaultB-transit, vaultB-1, vaultB-2, vaultB-3
 - Cluster C → vaultC-transit, vaultC-1, vaultC-2, vaultC-3
 - Cluster D → vaultD-transit, vaultD-1, vaultD-2, vaultD-3
@@ -86,4 +86,5 @@ This will remove the containers and data volumes.
 - https://releases.hashicorp.com/vault
 - https://developer.hashicorp.com/vault/tutorials/enterprise/hashicorp-enterprise-lic
 - https://developer.hashicorp.com/vault/tutorials/enterprise/disaster-recovery#enable-dr-primary-replicationense
+- https://developer.hashicorp.com/vault/docs/concepts/tokens#periodic-tokens
 

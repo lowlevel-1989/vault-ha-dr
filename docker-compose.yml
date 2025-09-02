@@ -79,6 +79,23 @@ services:
         ipv4_address: 10.9.1.13
     ports: ["8213:8200"]
 
+  vaultA-agent:
+    <<: *vault-common
+    container_name: vaultA-agent
+    command: "vault agent --config=/vault/config/vault.hcl"
+    environment:
+      - VAULT_ADDR=http://10.9.1.11:8200
+      - VAULT_NAMESPACE=root
+      - VAULT_LICENSE=${VAULT_LICENSE}
+    volumes:
+      - ./cluster-a/config/agent.hcl:/vault/config/vault.hcl:z
+      - ./cluster-a/data/agent:/vault/data:z
+      - ./cluster-a/data/transit:/vault/token:z
+      - ./shared:/vault/shared:z
+    networks: 
+      vault_network:
+        ipv4_address: 10.9.1.14
+
   # --- Cluster B ---
   vaultB-transit:
     <<: *vault-common
