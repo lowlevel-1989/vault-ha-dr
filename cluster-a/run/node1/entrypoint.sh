@@ -50,6 +50,35 @@ vault_dr_enable() {
   unset VAULT_TOKEN
 }
 
+vault_pr_enable() {
+  # Habilitar Performance Replication en el primario
+  # REF: https://developer.hashicorp.com/vault/tutorials/enterprise/performance-replication
+  export VAULT_TOKEN=$1
+  export PRI_ADDR=http://vaultA-1:8200
+
+   echo "--- PR[1]. Enable Performance Replication on the primary cluster."
+  sleep 2
+    echo "--- PR[2]. Initial steps for Performance Replication primary cluster."
+  
+  #quitar estos pasos cuando funcione ok 
+  vault auth enable -address=$PRI_ADDR  userpass
+  vault write -address=$PRI_ADDR  auth/userpass/users/superuser password="vaultMagic" 
+  vault secrets enable -address=$PRI_ADDR -path=replicatedkv kv-v2
+  vault write -address=$PRI_ADDR -f sys/replication/performance/primary/enable
+
+   echo "--- PR[3]. Generate a Performance secondary token."
+  sleep 2
+  RESPONSE=$(vault write -address=$PRI_ADDR --format json sys/replication/performance/primary/secondary-token id="pr-secondary")
+  SECONDARY_PR_TOKEN=$(echo "$RESPONSE" | jq -r ".wrap_info.token")
+
+   echo "$SECONDARY_PR_TOKEN" > /vault/shared/cluster_a_performance_token
+  touch /vault/shared/cluster_a_performance_token_ready
+
+  echo "secondary-performance-token: $SECONDARY_PR_TOKEN"
+  unset VAULT_TOKEN
+  unset PRI_ADD
+}
+
 vault_create_period_token() {
   export VAULT_TOKEN=$1
 
@@ -77,6 +106,7 @@ if ! vault status >/dev/null 2>&1; then
 
   vault_create_period_token $INIT_TOKEN
   vault_dr_enable $INIT_TOKEN
+  vault_pr_enable $INIT_TOKEN
 
   unset INIT_TOKEN
 fi
