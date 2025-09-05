@@ -87,4 +87,5 @@ This will remove the containers and data volumes.
 - https://developer.hashicorp.com/vault/tutorials/enterprise/hashicorp-enterprise-lic
 - https://developer.hashicorp.com/vault/tutorials/enterprise/disaster-recovery#enable-dr-primary-replicationense
 - https://developer.hashicorp.com/vault/docs/concepts/tokens#periodic-tokens
-
+- https://developer.hashicorp.com/vault/tutorials/vault-agent/agent-quick-start?variants=vault-deploy%3Aselfhosted
+- https://developer.hashicorp.com/vault/docs/agent-and-proxy/autoauth
