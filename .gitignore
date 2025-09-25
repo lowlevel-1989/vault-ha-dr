@@ -3,6 +3,16 @@ shared/cluster_a_wrapping_token_ready
 shared/cluster_a_period_token_5m
 shared/cluster_c_wrapping_token
 shared/cluster_c_wrapping_token_ready
+shared/cluster_a_init_ready
+shared/cluster_a_node_2_init_ready
+shared/cluster_a_node_3_init_ready
+shared/cluster_a_root_token
+shared/cluster_a_unseal_key
+shared/cluster_c_init_ready
+shared/cluster_c_node_2_init_ready
+shared/cluster_c_node_3_init_ready
+shared/cluster_c_root_token
+shared/cluster_c_unseal_key
 
 cluster-a/data/transit/core
 cluster-a/data/transit/logical

@@ -1,5 +1,5 @@
 x-vault-common: &vault-common
-  image: vault-alpine:1.0.1
+  image: vault-alpine:1.0.2
   build:
     context: .
     args:
@@ -25,13 +25,17 @@ networks:
 
 services:
   # --- Cluster A ---
-  vaultA-transit:
+  vaultA-agent:
     <<: *vault-common
-    container_name: vaultA-transit
+    container_name: vaultA-agent
+    environment:
+      - VAULT_ADDR=http://10.9.1.11:8200
+      - VAULT_NAMESPACE=root
+      - VAULT_LICENSE=${VAULT_LICENSE}
     volumes:
-      - ./cluster-a/config/transit.hcl:/vault/config/vault.hcl:z
-      - ./cluster-a/data/transit:/vault/data:z
-      - ./cluster-a/run/transit/entrypoint.sh:/entrypoint.sh:z
+      - ./cluster-a/config/agent.hcl:/vault/config/vault.hcl:z
+      - ./cluster-a/data/agent:/vault/data:z
+      - ./cluster-a/run/agent/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
       vault_network:
@@ -43,7 +47,6 @@ services:
     volumes:
       - ./cluster-a/config/node1.hcl:/vault/config/vault.hcl:z
       - ./cluster-a/data/node1:/vault/data:z
-      - ./cluster-a/data/transit:/vault/token:z
       - ./cluster-a/run/node1/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
@@ -57,7 +60,6 @@ services:
     volumes:
       - ./cluster-a/config/node2.hcl:/vault/config/vault.hcl:z
       - ./cluster-a/data/node2:/vault/data:z
-      - ./cluster-a/data/transit:/vault/token:z
       - ./cluster-a/run/node2/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
@@ -71,7 +73,6 @@ services:
     volumes:
       - ./cluster-a/config/node3.hcl:/vault/config/vault.hcl:z
       - ./cluster-a/data/node3:/vault/data:z
-      - ./cluster-a/data/transit:/vault/token:z
       - ./cluster-a/run/node3/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
@@ -79,43 +80,13 @@ services:
         ipv4_address: 10.9.1.13
     ports: ["8213:8200"]
 
-  vaultA-agent:
-    <<: *vault-common
-    container_name: vaultA-agent
-    command: "vault agent --config=/vault/config/vault.hcl"
-    environment:
-      - VAULT_ADDR=http://10.9.1.11:8200
-      - VAULT_NAMESPACE=root
-      - VAULT_LICENSE=${VAULT_LICENSE}
-    volumes:
-      - ./cluster-a/config/agent.hcl:/vault/config/vault.hcl:z
-      - ./cluster-a/data/agent:/vault/data:z
-      - ./cluster-a/data/transit:/vault/token:z
-      - ./shared:/vault/shared:z
-    networks: 
-      vault_network:
-        ipv4_address: 10.9.1.14
-
   # --- Cluster B ---
-  vaultB-transit:
-    <<: *vault-common
-    container_name: vaultB-transit
-    volumes:
-      - ./cluster-b/config/transit.hcl:/vault/config/vault.hcl:z
-      - ./cluster-b/data/transit:/vault/data:z
-      - ./cluster-b/run/transit/entrypoint.sh:/entrypoint.sh:z
-      - ./shared:/vault/shared:z
-    networks: 
-      vault_network:
-        ipv4_address: 10.9.2.10
-
   vaultB-1:
     <<: *vault-common
     container_name: vaultB-1
     volumes:
       - ./cluster-b/config/node1.hcl:/vault/config/vault.hcl:z
       - ./cluster-b/data/node1:/vault/data:z
-      - ./cluster-b/data/transit:/vault/token:z
       - ./cluster-b/run/node1/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
@@ -129,7 +100,6 @@ services:
     volumes:
       - ./cluster-b/config/node2.hcl:/vault/config/vault.hcl:z
       - ./cluster-b/data/node2:/vault/data:z
-      - ./cluster-b/data/transit:/vault/token:z
       - ./cluster-b/run/node2/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
@@ -143,7 +113,6 @@ services:
     volumes:
       - ./cluster-b/config/node3.hcl:/vault/config/vault.hcl:z
       - ./cluster-b/data/node3:/vault/data:z
-      - ./cluster-b/data/transit:/vault/token:z
       - ./cluster-b/run/node3/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
@@ -152,25 +121,12 @@ services:
     ports: ["8223:8200"]
 
   # --- Cluster C ---
-  vaultC-transit:
-    <<: *vault-common
-    container_name: vaultC-transit
-    volumes:
-      - ./cluster-c/config/transit.hcl:/vault/config/vault.hcl:z
-      - ./cluster-c/data/transit:/vault/data:z
-      - ./cluster-c/run/transit/entrypoint.sh:/entrypoint.sh:z
-      - ./shared:/vault/shared:z
-    networks: 
-      vault_network:
-        ipv4_address: 10.9.3.10
-
   vaultC-1:
     <<: *vault-common
     container_name: vaultC-1
     volumes:
       - ./cluster-c/config/node1.hcl:/vault/config/vault.hcl:z
       - ./cluster-c/data/node1:/vault/data:z
-      - ./cluster-c/data/transit:/vault/token:z
       - ./cluster-c/run/node1/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
@@ -184,7 +140,6 @@ services:
     volumes:
       - ./cluster-c/config/node2.hcl:/vault/config/vault.hcl:z
       - ./cluster-c/data/node2:/vault/data:z
-      - ./cluster-c/data/transit:/vault/token:z
       - ./cluster-c/run/node2/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
@@ -198,7 +153,6 @@ services:
     volumes:
       - ./cluster-c/config/node3.hcl:/vault/config/vault.hcl:z
       - ./cluster-c/data/node3:/vault/data:z
-      - ./cluster-c/data/transit:/vault/token:z
       - ./cluster-c/run/node3/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
@@ -207,25 +161,12 @@ services:
     ports: ["8233:8200"]
 
   # --- Cluster D ---
-  vaultD-transit:
-    <<: *vault-common
-    container_name: vaultD-transit
-    volumes:
-      - ./cluster-d/config/transit.hcl:/vault/config/vault.hcl:z
-      - ./cluster-d/data/transit:/vault/data:z
-      - ./cluster-d/run/transit/entrypoint.sh:/entrypoint.sh:z
-      - ./shared:/vault/shared:z
-    networks: 
-      vault_network:
-        ipv4_address: 10.9.4.10
-
   vaultD-1:
     <<: *vault-common
     container_name: vaultD-1
     volumes:
       - ./cluster-d/config/node1.hcl:/vault/config/vault.hcl:z
       - ./cluster-d/data/node1:/vault/data:z
-      - ./cluster-d/data/transit:/vault/token:z
       - ./cluster-d/run/node1/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
@@ -239,7 +180,6 @@ services:
     volumes:
       - ./cluster-d/config/node2.hcl:/vault/config/vault.hcl:z
       - ./cluster-d/data/node2:/vault/data:z
-      - ./cluster-d/data/transit:/vault/token:z
       - ./cluster-d/run/node2/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 
@@ -253,7 +193,6 @@ services:
     volumes:
       - ./cluster-d/config/node3.hcl:/vault/config/vault.hcl:z
       - ./cluster-d/data/node3:/vault/data:z
-      - ./cluster-d/data/transit:/vault/token:z
       - ./cluster-d/run/node3/entrypoint.sh:/entrypoint.sh:z
       - ./shared:/vault/shared:z
     networks: 

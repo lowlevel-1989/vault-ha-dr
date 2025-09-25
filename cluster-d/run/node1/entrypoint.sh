@@ -21,15 +21,29 @@ until curl -s http://127.0.0.1:8200/v1/sys/health >/dev/null; do
   sleep 2
 done
 
-vault_dr_enable_with_cluster_c() {
-  until [ -f "/vault/shared/cluster_c_wrapping_token_ready" ]; do
-    echo "Waiting for cluster_c_wrapping_token from cluster C..."
+wait_for_vault_restart() {
+  until [ -f /vault/shared/cluster_a_init_ready ] && \
+        [ -f /vault/shared/cluster_b_init_ready ] && \
+        [ -f /vault/shared/cluster_c_init_ready ] && \
+        [ -f /vault/shared/cluster_d_init_ready ]; do
+    echo "Waiting for initialization files to exist..."
     sleep 2
   done
 
+  echo "All required files exist. Exiting."
+  exit 0
+}
+
+vault_dr_enable_with_cluster_c() {
+  export VAULT_TOKEN=$1
+
   echo --- DR[1] Enable DR replication on the secondary cluster.
 
-  export VAULT_TOKEN=$1
+  until [ -f "/vault/shared/cluster_c_wrapping_token_ready" ]; do
+    echo "Waiting for cluster_c_wrapping_token_ready"
+    sleep 15
+  done
+
   WRAPPING_TOKEN=$(cat /vault/shared/cluster_c_wrapping_token)
 
   vault write sys/replication/dr/secondary/enable token="$WRAPPING_TOKEN"
@@ -47,15 +61,19 @@ vault_init() {
 
 # Solo inicializar si no lo está
 # Este paso solo se ejecuta la primera vez que se levanta el cluster
-if ! vault status >/dev/null 2>&1; then
+if [ ! -f "/vault/shared/cluster_d_init_ready" ]; then
   vault_init
 
   # utilizarlo para login temporal
-  VAULT_TOKEN="$(jq -r '.root_token' /vault/data/init.json)"
+  INIT_TOKEN="$(jq -r '.root_token' /vault/data/init.json)"
 
-  echo "--- ROOT TOKEN: $VAULT_TOKEN"
+  echo "--- ROOT TOKEN: $INIT_TOKEN"
 
-  vault_dr_enable_with_cluster_c $VAULT_TOKEN
+  # vault_dr_enable_with_cluster_c $INIT_TOKEN
+  touch /vault/shared/cluster_d_init_ready
+  unset VAULT_TOKEN
+
+  wait_for_vault_restart
 fi
 
 wait $VAULT_PID

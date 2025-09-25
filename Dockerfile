@@ -1,7 +1,7 @@
 FROM alpine:3.20
 
 ARG VAULT_ENTERPRISE=false
-ARG VAULT_VERSION=1.19.0
+ARG VAULT_VERSION=1.20.3
 RUN echo ">>> VAULT_ENTERPRISE=${VAULT_ENTERPRISE}" && sleep 5
 
 RUN apk add --no-cache wget curl jq unzip ca-certificates

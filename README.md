@@ -25,10 +25,19 @@ netstat -tuln
 
 Podman Compose will build the image because services use `build: .` in the compose file:
 
+#### First time, build image
 ```
-podman build --build-arg VAULT_ENTERPRISE=true --build-arg VAULT_VERSION=1.19.0  -t vault-alpine:1.0.1 .
+podman build --build-arg VAULT_ENTERPRISE=true --build-arg VAULT_VERSION=1.20.3  -t vault-alpine:1.0.2 .
+```
+#### First time, setup clusters and waiting exit
+```
+podman-compose up
+podman-compose down
+```
+
+#### clusters up
+```
 podman-compose up -d
-podman container logs -f vaultA-1
 ```
 
 This will launch 17 containers:

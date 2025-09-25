@@ -1,27 +1,72 @@
 #!/bin/sh
 set -e
 
-TOKEN_FILE="/vault/token/root_token-vault_1"
-until [ -f "$TOKEN_FILE" ]; do
-  echo "Waiting for autounseal token from transit..."
-  sleep 15
-done
-
-VAULT_TOKEN=$(cat "$TOKEN_FILE")
-export VAULT_TOKEN
-
 vault server -config=/vault/config/vault.hcl &
 VAULT_PID=$!
 
 echo "vault server started"
 
-# Esperar a que responda
-until curl -s http://127.0.0.1:8200/v1/sys/health >/dev/null; do
-  echo "Waiting for local Vault API..."
-  sleep 2
-done
+wait_for_vault() {
+  until curl -s http://$1:8200/v1/sys/health >/dev/null; do
+    echo "Waiting for Vault API [$1]..."
+    sleep 2
+  done
+}
+
+vault_unseal() {
+  vault operator unseal "$(cat /vault/shared/cluster_a_unseal_key)"
+}
+
+vault_wait_for_leader() {
+  while ! vault operator raft list-peers | grep -qi leader; do
+    echo "Waiting for a leader to appear in the cluster..."
+    sleep 2
+  done
+  echo "Leader detected!"
+}
+
+wait_for_vault_unseal() {
+  echo "Waiting for Vault to be unsealed..."
+  vault status
+
+  while [ "$(vault status -format=json 2>/dev/null | jq -r '.sealed')" = "true" ]; do
+    echo "Vault is still sealed..."
+    sleep 2
+  done
+
+  vault status
+  echo "Vault is unsealed"
+}
+
+vault_init() {
+  echo "Initializing ..."
+  INIT_RESPONSE=$(vault operator init -format=json -key-shares 1 -key-threshold 1)
+
+  UNSEAL_KEY=$(echo "$INIT_RESPONSE" | jq -r .unseal_keys_b64[0])
+  VAULT_TOKEN=$(echo "$INIT_RESPONSE" | jq -r .root_token)
+
+  echo "$UNSEAL_KEY"  > /vault/shared/cluster_b_unseal_key
+  echo "$VAULT_TOKEN" > /vault/shared/cluster_b_root_token
+
+  printf "\n%s" \
+    "--- UNSEAL KEY: $UNSEAL_KEY" \
+    "--- ROOT TOKEN: $VAULT_TOKEN" \
+    ""
+
+  printf "\n%s" \
+    "unsealing and logging" \
+    ""
+  sleep 2 # Added for human readability
+
+  vault operator unseal "$UNSEAL_KEY"
+
+  export VAULT_TOKEN
+}
 
 vault_dr_enable_with_cluster_a() {
+  echo dr_enable_with_cluster_a
+  vault status
+
   until [ -f "/vault/shared/cluster_a_wrapping_token_ready" ]; do
     echo "Waiting for cluster_a_wrapping_token from cluster A..."
     sleep 2
@@ -29,34 +74,26 @@ vault_dr_enable_with_cluster_a() {
 
   echo --- DR[1] Enable DR replication on the secondary cluster.
 
-  export VAULT_TOKEN=$1
   WRAPPING_TOKEN=$(cat /vault/shared/cluster_a_wrapping_token)
 
   vault write sys/replication/dr/secondary/enable token="$WRAPPING_TOKEN"
-
-  unset VAULT_TOKEN
 }
 
-vault_init() {
-  echo "Initializing cluster with Transit seal..."
-  vault operator init -format json > /vault/data/init.json
-
-  # limpiamos el token para el unseal
-  unset VAULT_TOKEN
-}
+wait_for_vault 127.0.0.1
 
 # Solo inicializar si no lo está
 # Este paso solo se ejecuta la primera vez que se levanta el cluster
-if ! vault status >/dev/null 2>&1; then
+if [ ! -f "/vault/shared/cluster_b_init_ready" ]; then
+  # VAULT_TOKEN asignado en vault_init como login temporal
   vault_init
+  vault_wait_for_leader
+  vault_dr_enable_with_cluster_a
+  wait_for_vault_unseal
 
-  # utilizarlo para login temporal
-  VAULT_TOKEN="$(jq -r '.root_token' /vault/data/init.json)"
-
-  echo "--- ROOT TOKEN: $VAULT_TOKEN"
-
-  vault_dr_enable_with_cluster_a $VAULT_TOKEN
+  touch /vault/shared/cluster_b_init_ready
+else
+  vault_unseal
 fi
 
+unset VAULT_TOKEN
 wait $VAULT_PID
-

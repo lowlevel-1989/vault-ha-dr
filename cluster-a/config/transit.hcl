@@ -1,3 +1,4 @@
+# De momento no esta en uso, lo dejo de referencia
 storage "file" {
   path = "/vault/data"
 }
