@@ -1,39 +1,69 @@
 #!/bin/sh
 set -e
 
-TOKEN_FILE="/vault/token/root_token-vault_1"
-until [ -f "$TOKEN_FILE" ]; do
-  echo "Waiting for autounseal token from transit..."
-  sleep 15
-done
-
-VAULT_TOKEN=$(cat "$TOKEN_FILE")
-export VAULT_TOKEN
-
 vault server -config=/vault/config/vault.hcl &
 VAULT_PID=$!
 
 echo "vault server started"
 
-# Esperar a que responda
-until curl -s http://127.0.0.1:8200/v1/sys/health >/dev/null; do
-  echo "Waiting for local Vault API..."
-  sleep 2
-done
+wait_for_vault() {
+  until curl -s http://$1:8200/v1/sys/health >/dev/null; do
+    echo "Waiting for Vault API [$1]..."
+    sleep 2
+  done
+}
+
+vault_unseal() {
+  vault operator unseal "$(cat /vault/shared/cluster_a_unseal_key)"
+}
+
+
+wait_for_vault_nodes() {
+  until [ "$(vault operator raft list-peers -format=json | jq '.data.config.servers | length')" -ge 3 ]; do
+    echo "Less than 3 nodes in the cluster, retrying..."
+    sleep 5
+  done
+
+  echo "3 nodes are now present in the cluster"
+}
+
+vault_wait_for_leader() {
+  while ! vault operator raft list-peers | grep -qi leader; do
+    echo "Waiting for a leader to appear in the cluster..."
+    sleep 2
+  done
+  echo "Leader detected!"
+}
 
 vault_init() {
-  echo "Initializing cluster with Transit seal..."
-  vault operator init --format json > /vault/data/init.json
+  echo "Initializing ..."
+  INIT_RESPONSE=$(vault operator init -format=json -key-shares 1 -key-threshold 1)
 
-  # limpiamos el token para el unseal
-  unset VAULT_TOKEN
+  UNSEAL_KEY=$(echo "$INIT_RESPONSE" | jq -r .unseal_keys_b64[0])
+  VAULT_TOKEN=$(echo "$INIT_RESPONSE" | jq -r .root_token)
+
+  echo "$UNSEAL_KEY"  > /vault/shared/cluster_a_unseal_key
+  echo "$VAULT_TOKEN" > /vault/shared/cluster_a_root_token
+
+  printf "\n%s" \
+    "--- UNSEAL KEY: $UNSEAL_KEY" \
+    "--- ROOT TOKEN: $VAULT_TOKEN" \
+    ""
+
+  printf "\n%s" \
+    "unsealing and logging" \
+    ""
+  sleep 2 # Added for human readability
+
+  vault operator unseal "$UNSEAL_KEY"
+
+  export VAULT_TOKEN
 }
 
 vault_dr_enable() {
-  # VAULT_TOKEN como login temporal
+  echo dr_enable
+  vault status
   # REF: https://developer.hashicorp.com/vault/tutorials/enterprise/disaster-recovery#enable-dr-primary-replicationense
-
-  export VAULT_TOKEN=$1
   echo --- DR[1]. Enable DR replication on the primary cluster.
   sleep 2
   vault write -f sys/replication/dr/primary/enable
@@ -46,42 +76,33 @@ vault_dr_enable() {
   touch /vault/shared/cluster_a_wrapping_token_ready
 
   echo secondary-token: $SECONDARY_TOKEN
-
-  unset VAULT_TOKEN
 }
 
 vault_pr_enable() {
+  echo pr_enable
+  vault status
   # Habilitar Performance Replication en el primario
   # REF: https://developer.hashicorp.com/vault/tutorials/enterprise/performance-replication
-  export VAULT_TOKEN=$1
-  export PRI_ADDR=http://vaultA-1:8200
-
-   echo "--- PR[1]. Enable Performance Replication on the primary cluster."
+  echo "--- PR[1]. Enable Performance Replication on the primary cluster."
   sleep 2
-    echo "--- PR[2]. Initial steps for Performance Replication primary cluster."
+  echo "--- PR[2]. Initial steps for Performance Replication primary cluster."
   
-  #quitar estos pasos cuando funcione ok 
-  vault auth enable -address=$PRI_ADDR  userpass
-  vault write -address=$PRI_ADDR  auth/userpass/users/superuser password="vaultMagic" 
-  vault secrets enable -address=$PRI_ADDR -path=replicatedkv kv-v2
-  vault write -address=$PRI_ADDR -f sys/replication/performance/primary/enable
+  vault write -f sys/replication/performance/primary/enable
 
-   echo "--- PR[3]. Generate a Performance secondary token."
+  echo "--- PR[3]. Generate a Performance secondary token."
   sleep 2
-  RESPONSE=$(vault write -address=$PRI_ADDR --format json sys/replication/performance/primary/secondary-token id="pr-secondary")
+  RESPONSE=$(vault write --format json sys/replication/performance/primary/secondary-token id="pr-secondary")
   SECONDARY_PR_TOKEN=$(echo "$RESPONSE" | jq -r ".wrap_info.token")
 
-   echo "$SECONDARY_PR_TOKEN" > /vault/shared/cluster_a_performance_token
+  echo "$SECONDARY_PR_TOKEN" > /vault/shared/cluster_a_performance_token
   touch /vault/shared/cluster_a_performance_token_ready
 
   echo "secondary-performance-token: $SECONDARY_PR_TOKEN"
-  unset VAULT_TOKEN
-  unset PRI_ADD
 }
 
 vault_create_period_token() {
-  export VAULT_TOKEN=$1
-
+  echo create_period_token
+  vault status
   # ref: https://developer.hashicorp.com/vault/docs/concepts/tokens#periodic-tokens
   # lo utiliza el agente para authenticar y renovarlo
   # el request de renew lo ejecuta en funcion del 
@@ -90,25 +111,45 @@ vault_create_period_token() {
   PERIOD_TOKEN=$(echo "$RESPONSE" | jq -r ".auth.client_token")
 
   echo $PERIOD_TOKEN > /vault/shared/cluster_a_period_token_5m
-
-  unset VAULT_TOKEN
 }
+
+vault_create_policy_superuser() {
+  echo create_policy_superuser
+  vault status
+  vault policy write superuser -<<EOF
+  path "*" {
+    capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+  }
+EOF
+}
+
+vault_create_admin_superuser() {
+  echo create_admin_superuser
+  vault status
+  vault auth enable userpass
+  vault write auth/userpass/users/admin password="admin" policies="superuser"
+}
+
+wait_for_vault 127.0.0.1
 
 # Solo inicializar si no lo está
 # Este paso solo se ejecuta la primera vez que se levanta el cluster
-if ! vault status >/dev/null 2>&1; then
+if [ ! -f "/vault/shared/cluster_a_init_ready" ]; then
+  # VAULT_TOKEN asignado en vault_init como login temporal
   vault_init
+  vault_wait_for_leader
 
-  # utilizarlo para login temporal
-  INIT_TOKEN="$(jq -r '.root_token' /vault/data/init.json)"
+  vault_create_period_token
+  vault_create_policy_superuser
+  vault_create_admin_superuser
 
-  echo "--- ROOT TOKEN: $INIT_TOKEN"
+  touch /vault/shared/cluster_a_init_ready
+  wait_for_vault_nodes
 
-  vault_create_period_token $INIT_TOKEN
-  vault_dr_enable $INIT_TOKEN
-  vault_pr_enable $INIT_TOKEN
-
-  unset INIT_TOKEN
+  vault_pr_enable
+  vault_dr_enable
 fi
 
+vault_unseal
+unset VAULT_TOKEN
 wait $VAULT_PID

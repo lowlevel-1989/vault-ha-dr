@@ -54,5 +54,16 @@ else
   vault login "$VAULT_TOKEN"
 fi
 
-wait $VAULT_PID
+
+# Esperar a que responda
+until curl -s http://vaultB-1:8200/v1/sys/health >/dev/null; do
+  sleep 2
+done
+
+# Salimos si el nodo 1 deja de existir
+while curl -s http://vaultB-1:8200/v1/sys/health >/dev/null; do
+  sleep 2
+done
+
+kill $VAULT_PID
 
