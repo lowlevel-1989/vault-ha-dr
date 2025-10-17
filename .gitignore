@@ -1,3 +1,8 @@
+shared/cluster_b_init_ready
+shared/cluster_b_node_2_init_ready
+shared/cluster_b_node_3_init_ready
+shared/cluster_b_root_token
+shared/cluster_b_unseal_key
 shared/cluster_a_wrapping_token
 shared/cluster_a_wrapping_token_ready
 shared/cluster_a_period_token_5m
