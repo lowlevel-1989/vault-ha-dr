@@ -146,7 +146,6 @@ if [ ! -f "/vault/shared/cluster_a_init_ready" ]; then
   touch /vault/shared/cluster_a_init_ready
   wait_for_vault_nodes
 
-  vault_pr_enable
   vault_dr_enable
 fi
 
